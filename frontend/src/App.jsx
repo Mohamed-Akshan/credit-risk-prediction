@@ -1,8 +1,7 @@
 
 import { useState } from "react";
+import { assessCreditRisk } from "./api";
 
-const API_URL =
-  import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
 const initialForm = {
   age: 28,
@@ -17,6 +16,7 @@ const initialForm = {
   loan_purpose: "Education",
   loan_type: "Unsecured",
 };
+
 
 const numberFields = [
   {
@@ -64,6 +64,7 @@ const numberFields = [
   },
 ];
 
+
 const selectFields = [
   {
     name: "residence_type",
@@ -82,20 +83,23 @@ const selectFields = [
   },
 ];
 
+
 const integerFields = [
   "age",
   "loan_tenure_months",
   "num_open_accounts",
 ];
 
+
+// Default probability gauge
 function RiskGauge({ probability }) {
   const percent = Math.max(
     0,
     Math.min(probability * 100, 100)
   );
 
-  // Move the indicator along the semicircle
   const angle = Math.PI * (1 - percent / 100);
+
   const indicatorX = 160 + 125 * Math.cos(angle);
   const indicatorY = 155 - 125 * Math.sin(angle);
 
@@ -169,12 +173,15 @@ function RiskGauge({ probability }) {
   );
 }
 
+
 export default function App() {
   const [form, setForm] = useState(initialForm);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+
+  // Update form fields
   function updateField(name, value) {
     setForm((previous) => ({
       ...previous,
@@ -185,12 +192,16 @@ export default function App() {
     setError("");
   }
 
+
+  // Reset form
   function resetForm() {
     setForm(initialForm);
     setResult(null);
     setError("");
   }
 
+
+  // Call the trained model through FastAPI
   async function handleSubmit(event) {
     event.preventDefault();
 
@@ -199,34 +210,20 @@ export default function App() {
     setResult(null);
 
     try {
-      const response = await fetch(`${API_URL}/predict`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
+      const prediction = await assessCreditRisk(form);
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        const message = Array.isArray(data.detail)
-          ? data.detail.map((item) => item.msg).join("; ")
-          : data.detail || "Prediction failed.";
-
-        throw new Error(message);
-      }
-
-      setResult(data);
+      setResult(prediction);
     } catch (err) {
       setError(
-        err.message || "Unable to connect to the API."
+        err.message || "Unable to calculate credit risk."
       );
     } finally {
       setLoading(false);
     }
   }
 
+
+  // Calculate loan-to-income ratio
   const loanToIncome =
     Number(form.income) > 0
       ? (
@@ -237,11 +234,14 @@ export default function App() {
 
   const isReview = result?.risk_flag === "Review";
 
+
   return (
     <div className="app">
+
       {/* Navbar */}
       <header className="navbar">
         <div className="navbar-container">
+
           <div className="brand">
             <div className="brand-mark">
               <svg
@@ -257,6 +257,7 @@ export default function App() {
                   rx="2"
                   fill="#87CE72"
                 />
+
                 <rect
                   x="18"
                   y="21"
@@ -265,6 +266,7 @@ export default function App() {
                   rx="2"
                   fill="#38B77A"
                 />
+
                 <rect
                   x="31"
                   y="11"
@@ -273,6 +275,7 @@ export default function App() {
                   rx="2"
                   fill="#087A50"
                 />
+
                 <path
                   d="M6 22L21 12L28 16L41 4"
                   stroke="#075B3D"
@@ -293,13 +296,17 @@ export default function App() {
             <span className="badge-dot" />
             ML-Powered Risk Assessment
           </div>
+
         </div>
       </header>
 
+
       <main className="main-container">
+
         {/* Hero */}
         <section className="hero">
           <div className="hero-copy">
+
             <div className="hero-eyebrow">
               CREDIT RISK INTELLIGENCE
             </div>
@@ -314,7 +321,10 @@ export default function App() {
             </p>
           </div>
 
-          <div className="hero-illustration" aria-hidden="true">
+          <div
+            className="hero-illustration"
+            aria-hidden="true"
+          >
             <div className="illustration-glow" />
 
             <div className="illustration-bars">
@@ -326,11 +336,13 @@ export default function App() {
 
             <div className="illustration-bank">
               <div className="bank-roof" />
+
               <div className="bank-columns">
                 <span />
                 <span />
                 <span />
               </div>
+
               <div className="bank-base" />
             </div>
 
@@ -347,9 +359,11 @@ export default function App() {
           </div>
         </section>
 
+
         {/* Dashboard */}
         <section className="dashboard">
-          {/* Applicant Form */}
+
+          {/* Loan Application Form */}
           <form
             className="dashboard-card applicant-card"
             onSubmit={handleSubmit}
@@ -362,12 +376,14 @@ export default function App() {
               <div className="card-header-text">
                 <h2>Applicant Information</h2>
                 <p>
-                  Enter customer and loan information for
-                  risk prediction.
+                  Enter customer and loan information
+                  for risk prediction.
                 </p>
               </div>
             </div>
 
+
+            {/* Numerical inputs */}
             <div className="form-grid">
               {numberFields.map((field) => (
                 <label
@@ -401,6 +417,8 @@ export default function App() {
                 </label>
               ))}
 
+
+              {/* Categorical inputs */}
               {selectFields.map((field) => (
                 <label
                   className="form-field"
@@ -432,10 +450,12 @@ export default function App() {
               ))}
             </div>
 
-            {/* Calculated Ratio */}
+
+            {/* Loan-to-income ratio */}
             <div className="ratio-panel">
               <div className="ratio-details">
                 <strong>Loan-to-Income Ratio</strong>
+
                 <span>
                   Automatically calculated from the
                   loan amount and income.
@@ -447,7 +467,8 @@ export default function App() {
               </div>
             </div>
 
-            {/* Buttons */}
+
+            {/* Form actions */}
             <div className="form-actions">
               <button
                 type="button"
@@ -468,6 +489,8 @@ export default function App() {
               </button>
             </div>
 
+
+            {/* Error message */}
             {error && (
               <div
                 className="error-message"
@@ -478,7 +501,8 @@ export default function App() {
             )}
           </form>
 
-          {/* Results Panel */}
+
+          {/* Risk Assessment Results */}
           <div className="dashboard-card results-card">
             <div className="card-header">
               <div className="section-mark">
@@ -494,11 +518,14 @@ export default function App() {
               </div>
             </div>
 
+
             {result ? (
               <div
                 className="results-content"
                 aria-live="polite"
               >
+
+                {/* Default probability */}
                 <div className="risk-overview">
                   <RiskGauge
                     probability={
@@ -508,8 +535,8 @@ export default function App() {
 
                   <div
                     className={`risk-status ${isReview
-                      ? "risk-review"
-                      : "risk-low"
+                        ? "risk-review"
+                        : "risk-low"
                       }`}
                   >
                     <span className="status-symbol">
@@ -532,7 +559,10 @@ export default function App() {
                   </div>
                 </div>
 
+
+                {/* Prediction metrics */}
                 <div className="metrics-grid">
+
                   <div className="metric-card">
                     <span className="metric-label">
                       Credit Score
@@ -563,9 +593,12 @@ export default function App() {
                       {result.loan_to_income_ratio}
                     </strong>
                   </div>
+
                 </div>
               </div>
             ) : (
+
+              /* Empty state */
               <div className="empty-result">
                 <div className="empty-result-circle">
                   <svg
@@ -579,12 +612,14 @@ export default function App() {
                       strokeWidth="7"
                       strokeLinecap="round"
                     />
+
                     <path
                       d="M32 45L45 28"
                       stroke="#075B3D"
                       strokeWidth="4"
                       strokeLinecap="round"
                     />
+
                     <circle
                       cx="32"
                       cy="45"
@@ -604,12 +639,15 @@ export default function App() {
               </div>
             )}
           </div>
+
         </section>
+
 
         <footer className="footer">
           <span>© 2026 Credit Risk Intelligence</span>
           <span>React · FastAPI · Machine Learning</span>
         </footer>
+
       </main>
     </div>
   );
