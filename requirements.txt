@@ -1,0 +1,42 @@
+
+# Data Analysis
+numpy
+pandas
+
+# Data Visualization
+matplotlib
+seaborn
+
+# Statistical Analysis
+scipy
+statsmodels
+
+# Machine Learning
+scikit-learn
+xgboost
+imbalanced-learn
+
+# Model Saving
+joblib
+
+# Jupyter Notebook
+notebook
+ipykernel
+
+# FastAPI Backend
+fastapi
+uvicorn[standard]
+pydantic
+
+# Experiment Tracking
+mlflow
+
+# Model Monitoring
+evidently
+
+# Testing
+pytest
+httpx
+
+# Environment Configuration
+python-dotenv

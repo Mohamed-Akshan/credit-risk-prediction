@@ -1,0 +1,136 @@
+
+# =====================================
+# DATASETS - NEVER UPLOAD
+# =====================================
+
+dataset/
+data/
+datasets/
+
+backend/dataset/
+backend/data/
+
+*.csv
+*.xlsx
+*.xls
+*.parquet
+*.feather
+
+
+# =====================================
+# PYTHON
+# =====================================
+
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+.coverage
+htmlcov/
+
+
+# =====================================
+# VIRTUAL ENVIRONMENTS
+# =====================================
+
+venv/
+.venv/
+env/
+ENV/
+
+backend/venv/
+frontend/venv/
+
+
+# =====================================
+# ENVIRONMENT VARIABLES / SECRETS
+# =====================================
+
+.env
+.env.*
+!.env.example
+
+*.pem
+*.key
+credentials.json
+secrets.json
+
+
+# =====================================
+# JUPYTER
+# =====================================
+
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+
+# =====================================
+# MLFLOW
+# =====================================
+
+mlruns/
+**/mlruns/
+
+mlartifacts/
+**/mlartifacts/
+
+mlflow.db
+**/mlflow.db
+
+mlflow.db-shm
+mlflow.db-wal
+
+*.db-journal
+
+
+# =====================================
+# FRONTEND
+# =====================================
+
+node_modules/
+dist/
+.vite/
+coverage/
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+
+# =====================================
+# LOG FILES
+# =====================================
+
+*.log
+logs/
+*.tmp
+*.temp
+
+
+# =====================================
+# IDE AND OPERATING SYSTEM
+# =====================================
+
+.vscode/
+.idea/
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+
+# =====================================
+# TEMPORARY MODEL FILES
+# =====================================
+
+*.pkl
+*.pickle
+*.onnx
+
+# Keep the final trained ML model
+!backend/artifacts/model_data.joblib
